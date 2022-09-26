@@ -1,10 +1,10 @@
-import Dropdown from "@Components/ui/Dropdown";
-import Colors from "@GlobalStyle/Colors";
+import Colors from "@GlobalStyle/colors";
 import { ThemeContext } from "@Src/store/themeContext";
 import { View, TextInput } from "react-native";
 import { useContext } from "react";
-import { horizontalScale, moderateScale, verticalScale } from "@Utils/Platform";
-import { screenWidth } from "@Utils/Helper";
+import { horizontalScale, moderateScale, verticalScale } from "@Utils/platform";
+import { screenWidth } from "@Utils/helper";
+import Dropdown from "@Components/ui/dropdown";
 
 const data = [
   { label: "A+", value: 4.2 },

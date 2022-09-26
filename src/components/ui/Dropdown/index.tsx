@@ -11,10 +11,10 @@ import {
   LayoutAnimation,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import Colors from "@GlobalStyle/Colors";
+import Colors from "@GlobalStyle/colors";
 import { ThemeContext } from "@Src/store/themeContext";
-import { screenHeight } from "@Utils/Helper";
-import { horizontalScale, moderateScale, verticalScale } from "@Utils/Platform";
+import { screenHeight } from "@Utils/helper";
+import { horizontalScale, moderateScale, verticalScale } from "@Utils/platform";
 
 interface Props {
   label: string;

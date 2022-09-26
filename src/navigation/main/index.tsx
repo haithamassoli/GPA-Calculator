@@ -7,8 +7,10 @@ import {
   DarkNavigationColors,
   LightNavigationColors,
 } from "@GlobalStyle/navigation";
+import CalculatorScreen from "@Screens/calculator";
+import { HomeStackParamList } from "@Types/navigation";
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator<HomeStackParamList>();
 
 export default function Route() {
   const { theme, toggleTheme } = useContext(ThemeContext);
@@ -23,6 +25,11 @@ export default function Route() {
         name="AboutEECommitte"
         component={AboutEEcommitteScreen}
       /> */}
+        <Stack.Screen
+          options={{ headerTitle: "الرئيسية" }}
+          name="Home"
+          component={CalculatorScreen}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

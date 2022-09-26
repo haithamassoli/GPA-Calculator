@@ -17,7 +17,7 @@ import {
 import CardRate from "./cardRate";
 import SubjectRate from "./subjectRate";
 
-type Props = StackScreenProps<HomeStackParamList, "Calculator">;
+type Props = StackScreenProps<HomeStackParamList, "Home">;
 
 const CalculatorScreen = ({ navigation }: Props) => {
   const { theme } = useContext(ThemeContext);
@@ -250,7 +250,7 @@ const CalculatorScreen = ({ navigation }: Props) => {
                 </Text>
                 <Text
                   style={{
-                    fontFamily: "TajawalMedium",
+                    fontFamily: "TajawalRegular",
                     color: textColor,
                     fontSize: moderateScale(12),
                     marginTop: verticalScale(4),
