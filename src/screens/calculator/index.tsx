@@ -1,11 +1,19 @@
 import CustomModal from "@Components/ui/modal";
+import { Feather } from "@expo/vector-icons";
 import Colors from "@GlobalStyle/colors";
 import { StackScreenProps } from "@react-navigation/stack";
 import { ThemeContext } from "@Store/themeContext";
 import { HomeStackParamList } from "@Types/navigation";
 import { screenWidth } from "@Utils/helper";
+import DropDownPicker from "react-native-dropdown-picker";
 import { horizontalScale, moderateScale, verticalScale } from "@Utils/platform";
-import { useContext, useLayoutEffect, useState, useRef } from "react";
+import {
+  useContext,
+  useLayoutEffect,
+  useState,
+  useRef,
+  useEffect,
+} from "react";
 import {
   View,
   ScrollView,
@@ -16,21 +24,20 @@ import {
 } from "react-native";
 import CardRate from "./cardRate";
 import SubjectRate from "./subjectRate";
+import Toggle from "./toggle";
 
 type Props = StackScreenProps<HomeStackParamList, "Home">;
 
 const CalculatorScreen = ({ navigation }: Props) => {
-  const { theme } = useContext(ThemeContext);
+  const { theme, toggleTheme } = useContext(ThemeContext);
   const textColor = theme === "light" ? Colors.lightText : Colors.darkText;
-  // const iconColor =
-  //   theme === "light"
-  //     ? require("@Assets/images/icons/light-icons/calculator.png")
-  //     : require("@Assets/images/icons/dark-icons/calculator.png");
-
+  const iconColor = Colors.primary400;
   const scrollViewRef = useRef();
   const [cumulative, setCumulative] = useState(true);
   const [visible, setVisible] = useState(false);
   const [massage, setMassage] = useState("");
+  const [open, setOpen] = useState(false);
+  const [gradeSystem, setGradeSystem] = useState("symbols");
   const [semester, setSemester] = useState("0");
   const [GPA, setGPA] = useState("0");
   const [prevGPA, setPrevGPA] = useState("0");
@@ -47,14 +54,35 @@ const CalculatorScreen = ({ navigation }: Props) => {
       headerTitleStyle: {
         fontFamily: "Bukra",
       },
-      // headerLeft: () => (
-      //   <CustomHeader
-      //     onPress={() => navigation.goBack()}
-      //     iconColor={iconColor}
-      //   />
-      // ),
+      headerRight: () => (
+        <TouchableOpacity
+          style={{
+            width: horizontalScale(40),
+            height: verticalScale(40),
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+          onPress={() => toggleTheme()}
+        >
+          <Feather
+            name={theme === "light" ? "moon" : "sun"}
+            size={moderateScale(28)}
+            color={iconColor}
+          />
+        </TouchableOpacity>
+      ),
     });
-  }, []);
+  }, [theme]);
+
+  useEffect(() => {
+    setSubjectCount(1);
+    setSelectedHour([{ label: "3", value: 3 }]);
+    if (gradeSystem === "symbols") {
+      setSelectedGrade([{ label: "A+", value: 4.2 }]);
+    } else {
+      setSelectedGrade([{ label: "100", value: 100 }]);
+    }
+  }, [gradeSystem]);
 
   const addSubject = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -62,9 +90,13 @@ const CalculatorScreen = ({ navigation }: Props) => {
       setMassage("لا يمكن اضافة المزيد من المواد");
       setVisible(true);
     } else {
+      if (gradeSystem === "symbols") {
+        setSelectedGrade((prev) => [...prev, { label: "A+", value: 4.2 }]);
+      } else {
+        setSelectedGrade((prev) => [...prev, { label: "100", value: 100 }]);
+      }
       setSubjectCount((e) => e + 1);
       setSelectedHour((e) => [...e, { label: "3", value: 3 }]);
-      setSelectedGrade((e) => [...e, { label: "A+", value: 4.2 }]);
     }
   };
 
@@ -87,6 +119,12 @@ const CalculatorScreen = ({ navigation }: Props) => {
       totalHour += selectedHour[i].value;
       totalGrade += selectedGrade[i].value * selectedHour[i].value;
     }
+    if (totalHour === 0) {
+      setMassage("لا يمكن ان يكون الساعات 0");
+      setVisible(true);
+      return;
+    }
+    // if (gradeSystem === "symbols") {
     setSemester((+totalGrade / +totalHour).toFixed(2));
     if (cumulative) {
       // @ts-ignore
@@ -100,8 +138,11 @@ const CalculatorScreen = ({ navigation }: Props) => {
       } else if (+prevSemesterHour + totalHour > 160) {
         setMassage("عدد الساعات المقطوعة لا يمكن أن يتعدى 160 ساعة!");
         setVisible(true);
-      } else if (+prevGPA > 4.2) {
+      } else if (+prevGPA > 4.2 && gradeSystem === "symbols") {
         setMassage("المعدل التراكمي السابق لا يمكن أن يتعدى 4.2!");
+        setVisible(true);
+      } else if (+prevGPA > 100 && gradeSystem === "numbers") {
+        setMassage("المعدل التراكمي السابق لا يمكن أن يتعدى 100!");
         setVisible(true);
       } else {
         setGPA(
@@ -115,7 +156,13 @@ const CalculatorScreen = ({ navigation }: Props) => {
   };
 
   return (
-    <View style={{ flex: 1, marginHorizontal: horizontalScale(14) }}>
+    <View
+      style={{
+        flex: 1,
+        marginHorizontal: horizontalScale(14),
+        marginBottom: verticalScale(12),
+      }}
+    >
       <CustomModal visible={visible} title={massage} setVisible={setVisible} />
       <ScrollView
         overScrollMode="never"
@@ -128,12 +175,18 @@ const CalculatorScreen = ({ navigation }: Props) => {
           scrollViewRef.current?.scrollToEnd({ animated: true })
         }
       >
+        <Toggle
+          title="حساب المعدل التراكمي"
+          isToggled={cumulative}
+          setIsToggled={setCumulative}
+        />
         <View
           style={{
             flexDirection: "row",
             justifyContent: "space-around",
             alignItems: "center",
             marginVertical: verticalScale(10),
+            paddingBottom: verticalScale(10),
           }}
         >
           <Text
@@ -143,40 +196,55 @@ const CalculatorScreen = ({ navigation }: Props) => {
               fontSize: moderateScale(16),
             }}
           >
-            حساب المعدل التراكمي
+            نظام العلامات
           </Text>
-          <TouchableOpacity
-            onPress={() => {
-              LayoutAnimation.configureNext(
-                LayoutAnimation.Presets.easeInEaseOut
-              );
-              setCumulative((e) => !e);
-            }}
+          <View
             style={{
-              width: horizontalScale(50),
-              height: verticalScale(30),
-              borderRadius: moderateScale(15),
-              backgroundColor:
-                cumulative && theme === "light"
-                  ? Colors.primaryLight
-                  : cumulative && theme === "dark"
-                  ? Colors.darkBackgroundSec
-                  : theme === "light"
-                  ? Colors.lightGray
-                  : Colors.darkBackgroundSec,
-              justifyContent: "center",
-              alignItems: cumulative ? "flex-end" : "flex-start",
+              width: horizontalScale(100),
             }}
           >
-            <View
-              style={{
-                width: horizontalScale(30),
-                height: verticalScale(30),
-                borderRadius: moderateScale(15),
-                backgroundColor: cumulative ? Colors.primary500 : Colors.gray,
+            <DropDownPicker
+              items={[
+                { label: "رموز", value: "symbols" },
+                { label: "أرقام", value: "numbers" },
+              ]}
+              containerStyle={{
+                height: verticalScale(40),
+                width: horizontalScale(100),
               }}
-            ></View>
-          </TouchableOpacity>
+              style={{
+                borderWidth: 0,
+                backgroundColor:
+                  theme === "light"
+                    ? Colors.lightBackgroundSec
+                    : Colors.darkBackgroundSec,
+                borderRadius: moderateScale(20),
+              }}
+              textStyle={{
+                fontFamily: "TajawalBold",
+                color: textColor,
+                fontSize: moderateScale(16),
+                zIndex: 100,
+              }}
+              dropDownContainerStyle={{
+                backgroundColor:
+                  theme === "light" && open
+                    ? "#eee"
+                    : theme === "dark" && open
+                    ? "#444"
+                    : theme === "light"
+                    ? Colors.lightBackgroundSec
+                    : Colors.darkBackgroundSec,
+                borderWidth: 0,
+                borderRadius: moderateScale(20),
+              }}
+              open={open}
+              placeholder="رموز"
+              value={gradeSystem}
+              setOpen={setOpen}
+              setValue={setGradeSystem}
+            />
+          </View>
         </View>
         <View
           style={{
@@ -185,8 +253,18 @@ const CalculatorScreen = ({ navigation }: Props) => {
             alignItems: "center",
           }}
         >
-          <CardRate title="المعدل الفصلي" rate={semester} />
-          {cumulative && <CardRate title="المعدل التراكمي" rate={GPA} />}
+          <CardRate
+            title="المعدل الفصلي"
+            rate={semester}
+            gradeSystem={gradeSystem}
+          />
+          {cumulative && (
+            <CardRate
+              title="المعدل التراكمي"
+              rate={GPA}
+              gradeSystem={gradeSystem}
+            />
+          )}
         </View>
         {cumulative && (
           <>
@@ -321,7 +399,7 @@ const CalculatorScreen = ({ navigation }: Props) => {
               style={{
                 fontFamily: "Bukra",
                 color: textColor,
-                fontSize: moderateScale(16),
+                fontSize: moderateScale(14),
               }}
             >
               وزن المادة
@@ -382,6 +460,7 @@ const CalculatorScreen = ({ navigation }: Props) => {
             setSelectedHour={setSelectedHour}
             setSelectedGrade={setSelectedGrade}
             itemNumber={index}
+            gradeSystem={gradeSystem}
           />
         ))}
         <View
@@ -457,7 +536,7 @@ const CalculatorScreen = ({ navigation }: Props) => {
             fontSize: moderateScale(16),
           }}
         >
-          احتساب المعدل
+          حساب المعدل
         </Text>
       </TouchableOpacity>
     </View>

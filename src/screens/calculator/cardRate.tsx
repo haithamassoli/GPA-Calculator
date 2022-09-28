@@ -8,30 +8,51 @@ import { screenWidth } from "@Utils/helper";
 type Props = {
   title: string;
   rate: string;
+  gradeSystem: string;
 };
 
-const CardRate = ({ title, rate }: Props) => {
+const CardRate = ({ title, rate, gradeSystem }: Props) => {
   const [grade, setGrade] = useState("");
   const { theme } = useContext(ThemeContext);
   const textColor = theme === "light" ? Colors.lightText : Colors.darkText;
 
   useEffect(() => {
-    if (+rate >= 4) {
-      setGrade("متميز");
-    } else if (+rate >= 3.5) {
-      setGrade("ممتاز");
-    } else if (+rate >= 3) {
-      setGrade("جيد جدا");
-    } else if (+rate >= 2.5) {
-      setGrade("جيد");
-    } else if (+rate >= 2) {
-      setGrade("مقبول");
-    } else if (+rate >= 1.5) {
-      setGrade("انذار");
-    } else if (+rate === 0) {
-      setGrade("لا يوجد بيانات");
+    if (gradeSystem === "symbols") {
+      if (+rate >= 4) {
+        setGrade("متميز");
+      } else if (+rate >= 3.5) {
+        setGrade("ممتاز");
+      } else if (+rate >= 3) {
+        setGrade("جيد جدا");
+      } else if (+rate >= 2.5) {
+        setGrade("جيد");
+      } else if (+rate >= 2) {
+        setGrade("مقبول");
+      } else if (+rate >= 1.5) {
+        setGrade("انذار");
+      } else if (+rate === 0) {
+        setGrade("لا يوجد بيانات");
+      } else {
+        setGrade("راسب");
+      }
     } else {
-      setGrade("راسب");
+      if (+rate >= 85) {
+        setGrade("متميز");
+      } else if (+rate >= 77) {
+        setGrade("ممتاز");
+      } else if (+rate >= 70) {
+        setGrade("جيد جدا");
+      } else if (+rate >= 63) {
+        setGrade("جيد");
+      } else if (+rate >= 57) {
+        setGrade("مقبول");
+      } else if (+rate >= 50) {
+        setGrade("انذار");
+      } else if (+rate === 0) {
+        setGrade("لا يوجد بيانات");
+      } else {
+        setGrade("راسب");
+      }
     }
   }, [rate]);
 

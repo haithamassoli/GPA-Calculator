@@ -45,15 +45,27 @@ type Props = {
       }[]
     >
   >;
+  gradeSystem: string;
   itemNumber: number;
 };
 const SubjectRate = ({
   setSelectedHour,
   setSelectedGrade,
   itemNumber,
+  gradeSystem,
 }: Props) => {
   const { theme } = useContext(ThemeContext);
   const textColor = theme === "light" ? Colors.lightText : Colors.darkText;
+
+  const handleChange = (value: string, itemNumber: number) => {
+    const newValue = Number(value);
+    setSelectedGrade((prev) => {
+      const newState = [...prev];
+      newState[itemNumber] = { label: value, value: newValue };
+      return newState;
+    });
+  };
+
   return (
     <View
       style={{
@@ -127,15 +139,39 @@ const SubjectRate = ({
           marginTop: verticalScale(20),
         }}
       >
-        <Dropdown
-          label="A+"
-          style={{ right: horizontalScale(10) }}
-          // @ts-ignore
-          data={data}
-          // @ts-ignore
-          onSelect={setSelectedGrade}
-          itemNumber={itemNumber}
-        />
+        {gradeSystem === "symbols" ? (
+          <Dropdown
+            label="A+"
+            style={{ right: horizontalScale(10) }}
+            // @ts-ignore
+            data={data}
+            // @ts-ignore
+            onSelect={setSelectedGrade}
+            itemNumber={itemNumber}
+          />
+        ) : (
+          <TextInput
+            style={{
+              fontFamily: "TajawalBold",
+              color: textColor,
+              fontSize: moderateScale(18),
+              textAlign: "center",
+              backgroundColor:
+                theme === "light"
+                  ? Colors.lightBackgroundSec
+                  : Colors.darkBackgroundSec,
+              paddingVertical: verticalScale(4),
+              paddingHorizontal: horizontalScale(8),
+              borderRadius: moderateScale(20),
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            placeholder="100"
+            placeholderTextColor={"gray"}
+            keyboardType="numeric"
+            onChangeText={(text) => handleChange(text, itemNumber)}
+          />
+        )}
       </View>
     </View>
   );
