@@ -55,21 +55,41 @@ const CalculatorScreen = ({ navigation }: Props) => {
         fontFamily: "Bukra",
       },
       headerRight: () => (
-        <TouchableOpacity
-          style={{
-            width: horizontalScale(40),
-            height: verticalScale(40),
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-          onPress={() => toggleTheme()}
-        >
-          <Feather
-            name={theme === "light" ? "moon" : "sun"}
-            size={moderateScale(28)}
-            color={iconColor}
-          />
-        </TouchableOpacity>
+        <View style={{ flexDirection: "row" }}>
+          <TouchableOpacity
+            style={{
+              height: verticalScale(40),
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "row",
+            }}
+            onPress={() => toggleTheme()}
+          >
+            <Feather
+              name={theme === "light" ? "moon" : "sun"}
+              size={moderateScale(28)}
+              color={iconColor}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              height: verticalScale(40),
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "row",
+            }}
+            onPress={() => navigation.push("About")}
+          >
+            <Feather
+              name="info"
+              style={{
+                paddingHorizontal: horizontalScale(8),
+              }}
+              size={moderateScale(28)}
+              color={iconColor}
+            />
+          </TouchableOpacity>
+        </View>
       ),
     });
   }, [theme]);
@@ -86,7 +106,7 @@ const CalculatorScreen = ({ navigation }: Props) => {
 
   const addSubject = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    if (subjectCount >= 8) {
+    if (subjectCount >= 15) {
       setMassage("لا يمكن اضافة المزيد من المواد");
       setVisible(true);
     } else {
@@ -124,7 +144,6 @@ const CalculatorScreen = ({ navigation }: Props) => {
       setVisible(true);
       return;
     }
-    // if (gradeSystem === "symbols") {
     setSemester((+totalGrade / +totalHour).toFixed(2));
     if (cumulative) {
       // @ts-ignore
@@ -134,9 +153,6 @@ const CalculatorScreen = ({ navigation }: Props) => {
         // @ts-ignore
       } else if (isNaN(prevSemesterHour)) {
         setMassage("يجب إدخال عدد الساعات المقطوعة!");
-        setVisible(true);
-      } else if (+prevSemesterHour + totalHour > 160) {
-        setMassage("عدد الساعات المقطوعة لا يمكن أن يتعدى 160 ساعة!");
         setVisible(true);
       } else if (+prevGPA > 4.2 && gradeSystem === "symbols") {
         setMassage("المعدل التراكمي السابق لا يمكن أن يتعدى 4.2!");
