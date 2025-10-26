@@ -32,7 +32,7 @@ const CalculatorScreen = ({ navigation }: Props) => {
   const { theme, toggleTheme } = useContext(ThemeContext);
   const textColor = theme === "light" ? Colors.lightText : Colors.darkText;
   const iconColor = Colors.primary400;
-  const scrollViewRef = useRef();
+  const scrollViewRef = useRef(null);
   const [cumulative, setCumulative] = useState(true);
   const [visible, setVisible] = useState(false);
   const [massage, setMassage] = useState("");

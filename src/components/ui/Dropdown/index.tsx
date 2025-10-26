@@ -26,7 +26,7 @@ interface Props {
 }
 
 const Dropdown: FC<Props> = ({ label, data, onSelect, itemNumber, style }) => {
-  const DropdownButton = useRef();
+  const DropdownButton = useRef(null);
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(undefined);
   const [dropdownBottom, setDropdownBottom] = useState(0);

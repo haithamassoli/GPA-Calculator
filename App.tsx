@@ -9,12 +9,6 @@ import { useFonts } from "expo-font";
 import Colors from "@GlobalStyle/colors";
 import Route from "@Navigation/main";
 
-if (Platform.OS === "android") {
-  if (UIManager.setLayoutAnimationEnabledExperimental) {
-    UIManager.setLayoutAnimationEnabledExperimental(true);
-  }
-}
-
 export default function App() {
   const { theme } = useContext(ThemeContext);
 

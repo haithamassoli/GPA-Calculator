@@ -4,7 +4,7 @@ import { View, TextInput } from "react-native";
 import { useContext } from "react";
 import { horizontalScale, moderateScale, verticalScale } from "@Utils/platform";
 import { screenWidth } from "@Utils/helper";
-import Dropdown from "@Components/ui/dropdown";
+import Dropdown from "@Components/ui/Dropdown";
 
 const data = [
   { label: "A+", value: 4.2 },
